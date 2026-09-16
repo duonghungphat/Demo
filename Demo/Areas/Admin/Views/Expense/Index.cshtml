@@ -1,0 +1,176 @@
+﻿@model IEnumerable<Demo.ViewModels.ExpenseViewModel>
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>Expense Tracker</h2>
+
+    <div>
+        <a asp-controller="Category"
+           asp-action="Index"
+           class="btn btn-secondary">
+            Categories
+        </a>
+
+        <a asp-action="Create"
+           class="btn btn-primary">
+            Add Expense
+        </a>
+    </div>
+</div>
+
+<table id="expenseTable"
+       class="table table-bordered table-striped">
+
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Note</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Note</td>
+                <td>@item.Amount.ToString("N0")</td>
+                <td>@item.ExpenseDate?.ToString("dd/MM/yyyy")</td>
+                <td>@item.CategoryName</td>
+
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@item.Id"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button type="button"
+                            class="btn btn-danger btn-sm delete-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            data-id="@item.Id"
+                            data-note="@item.Note">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade"
+     id="deleteModal"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Delete Expense
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                Delete:
+                <strong id="deleteNote"></strong>
+
+                <div id="deleteError"
+                     class="alert alert-danger mt-3 d-none">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <form id="deleteForm"
+                      asp-action="DeleteConfirmed"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           id="deleteId"
+                           name="id" />
+
+                    <button class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var table = $('#expenseTable').DataTable({order : []});
+            var rowToDelete = null;
+
+            $('#expenseTable').on(
+                'click',
+                '.delete-btn',
+                function () {
+
+                    var button = $(this);
+
+                    $('#deleteId')
+                        .val(button.data('id'));
+
+                    $('#deleteNote')
+                        .text(button.data('note'));
+
+                    rowToDelete =
+                        button.closest('tr');
+
+                    $('#deleteError')
+                        .addClass('d-none')
+                        .text('');
+                });
+
+            $('#deleteForm').on(
+                'submit',
+                function (event) {
+
+                    event.preventDefault();
+
+                    var form = $(this);
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: 'POST',
+                        data: form.serialize(),
+
+                        success: function (response) {
+                            if (response.success) {
+                                table
+                                    .row(rowToDelete)
+                                    .remove()
+                                    .draw(false);
+
+                                bootstrap.Modal
+                                    .getInstance(
+                                        document.getElementById(
+                                            'deleteModal'))
+                                    .hide();
+                            }
+                            else {
+                                $('#deleteError')
+                                    .removeClass('d-none')
+                                    .text(response.message);
+                            }
+                        }
+                    });
+                });
+        });
+    </script>
+}

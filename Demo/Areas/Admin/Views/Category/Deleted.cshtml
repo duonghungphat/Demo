@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Demo.ViewModels.CategoryViewModel>
+
+<h2>Deleted Categories</h2>
+
+<a asp-action="Index"
+   class="btn btn-secondary mb-3">
+    Back
+</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,198 @@
+﻿@model Demo.ViewModels.CourseViewModel
+@using Demo.Models
+
+<h2>Edit Course</h2>
+
+<form asp-action="Edit"
+      method="post"
+      enctype="multipart/form-data">
+
+    <input asp-for="Id" type="hidden" />
+
+    <input asp-for="ImagePath" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+
+        <input asp-for="Title"
+               class="form-control" />
+
+        <span asp-validation-for="Title"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description"
+               class="form-label"></label>
+
+        <textarea asp-for="Description"
+                  class="form-control"
+                  rows="4"></textarea>
+
+        <span asp-validation-for="Description"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price"
+               class="form-label"></label>
+
+        <input asp-for="Price"
+               class="form-control" />
+
+        <span asp-validation-for="Price"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Level"
+               class="form-label"></label>
+
+        <select asp-for="Level"
+                asp-items="Html.GetEnumSelectList<CourseLevel>()"
+                class="form-select">
+        </select>
+
+        <span asp-validation-for="Level"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate"
+               class="form-label"></label>
+
+        <input asp-for="StartDate"
+               type="date"
+               class="form-control" />
+
+        <span asp-validation-for="StartDate"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndDate"
+               class="form-label"></label>
+
+        <input asp-for="EndDate"
+               type="date"
+               class="form-control" />
+
+        <span asp-validation-for="EndDate"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DiscountPercent"
+               class="form-label"></label>
+
+        <input asp-for="DiscountPercent"
+               class="form-control" />
+
+        <span asp-validation-for="DiscountPercent"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CourseCategoryId"
+               class="form-label">
+            Category
+        </label>
+
+        <select asp-for="CourseCategoryId"
+                class="form-select course-category-select">
+
+            <option value="">
+                -- Select Category --
+            </option>
+
+            @foreach (var item in Model.CourseCategories)
+            {
+                <option value="@item.Id">
+                    @item.Name
+                </option>
+            }
+        </select>
+
+        <span asp-validation-for="CourseCategoryId"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="InstructorId"
+               class="form-label">
+            Instructor
+        </label>
+
+        <select asp-for="InstructorId"
+                class="form-select instructor-select">
+
+            <option value="">
+                -- Select Instructor --
+            </option>
+
+            @foreach (var item in Model.Instructors)
+            {
+                <option value="@item.Id">
+                    @item.FullName
+                </option>
+            }
+        </select>
+
+        <span asp-validation-for="InstructorId"
+              class="text-danger"></span>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <div class="mb-3">
+            <label class="form-label">
+                Current Image
+            </label>
+
+            <div>
+                <img src="@Model.ImagePath"
+                     alt="@Model.Title"
+                     style="max-width: 200px;"
+                     class="img-thumbnail" />
+            </div>
+        </div>
+    }
+
+    <div class="mb-3">
+        <label for="imageFile"
+               class="form-label">
+            Change Course Image
+        </label>
+
+        <input name="imageFile"
+               id="imageFile"
+               type="file"
+               accept=".jpg,.jpeg,.png,.webp"
+               class="form-control" />
+
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary">
+        Save
+    </button>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Back
+    </a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function () {
+            $('.course-category-select').select2();
+            $('.instructor-select').select2();
+        });
+    </script>
+}
